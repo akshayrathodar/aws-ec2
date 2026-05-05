@@ -1,6 +1,9 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+const apiUrl = (path) => `${API_BASE_URL}${path}`;
+
 function App() {
   const [todos, setTodos] = useState([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -8,7 +11,7 @@ function App() {
   const [editingTitle, setEditingTitle] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8000/')
+    fetch(apiUrl('/'))
       .then(response => response.json())
       .then(data => setTodos(data.todos))
       .catch(error => console.error('Error fetching todos:', error));
@@ -21,7 +24,7 @@ function App() {
       return;
     }
 
-    fetch("http://localhost:8000/add", {
+    fetch(apiUrl('/add'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +53,7 @@ function App() {
       return;
     }
 
-    fetch(`http://localhost:8000/update/${editingTodoId}`, {
+    fetch(apiUrl(`/update/${editingTodoId}`), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +83,7 @@ function App() {
   };
 
   const handleDeleteTodo = (todoId) => {
-    fetch(`http://localhost:8000/delete/${todoId}`, {
+    fetch(apiUrl(`/delete/${todoId}`), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +101,7 @@ function App() {
 
   const handleToggleComplete = (todoId, completed) => {
     console.log(todoId, completed);
-    fetch(`http://localhost:8000/update/${todoId}`, {
+    fetch(apiUrl(`/update/${todoId}`), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
