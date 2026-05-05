@@ -1,0 +1,39 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Must match MYSQL_DATABASE below (same DB the MySQL container creates).
+      DATABASE_URL: mysql+pymysql://appuser:password@db:3306/todo
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+
+  db:
+    # Pin 8.0: `mysql:8` can resolve to 8.4+, where
+    # --default-authentication-plugin=mysql_native_password is unsupported and mysqld aborts.
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: todo
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+volumes:
+  mysql_data:
