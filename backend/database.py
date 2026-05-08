@@ -9,10 +9,12 @@ Create the database once in MySQL:
   CREATE DATABASE todo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 """
 import os
+import time
 from collections.abc import Generator
 from urllib.parse import quote_plus
 
 from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 
@@ -35,7 +37,21 @@ SQLALCHEMY_DATABASE_URL = _database_url()
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     pool_pre_ping=True,
+    connect_args={"connect_timeout": 10},
 )
+
+
+def wait_for_db(timeout_seconds: int = 30, interval_seconds: float = 1.0) -> None:
+    """Wait until the MySQL database is reachable before continuing startup."""
+    start_time = time.monotonic()
+    while True:
+        try:
+            with engine.connect():
+                return
+        except OperationalError:
+            if time.monotonic() - start_time >= timeout_seconds:
+                raise
+            time.sleep(interval_seconds)
 
 
 class Base(DeclarativeBase):

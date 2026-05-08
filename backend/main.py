@@ -13,7 +13,7 @@ from auth import (
     get_current_user,
     get_password_hash,
 )
-from database import Base, SessionLocal, engine, get_db
+from database import Base, SessionLocal, engine, get_db, wait_for_db
 from models import Todo as TodoRow, User as UserRow
 
 
@@ -41,6 +41,7 @@ class UserResponse(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Starting up...")
+    wait_for_db()
     # Step 3 — `create_all` makes tables from every model that subclasses `Base` (if imported).
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
