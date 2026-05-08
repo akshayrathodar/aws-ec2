@@ -5,3 +5,5 @@ pydantic>=2.0.0
 pymysql>=1.1.0
 # Required for MySQL 8 default auth (caching_sha2_password) over PyMySQL
 cryptography>=42.0.0
+passlib[bcrypt]>=1.7.0
+python-jose[cryptography]>=3.3.0
