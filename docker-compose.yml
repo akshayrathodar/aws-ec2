@@ -3,6 +3,7 @@ version: '2.4'
 services:
   backend:
     build: ./backend
+    restart: unless-stopped
     ports:
       - "8000:8000"
     depends_on:
@@ -14,6 +15,7 @@ services:
 
   frontend:
     build: ./frontend
+    restart: unless-stopped
     ports:
       - "3001:80"
     depends_on:
@@ -23,6 +25,7 @@ services:
     # Pin 8.0: `mysql:8` can resolve to 8.4+, where
     # --default-authentication-plugin=mysql_native_password is unsupported and mysqld aborts.
     image: mysql:8.0
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: todo
       MYSQL_USER: appuser
