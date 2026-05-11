@@ -14,7 +14,7 @@ services:
       DATABASE_URL: mysql+pymysql://appuser:password@db:3306/todo
 
   frontend:
-    build: ./frontend
+    build: ./Frontend
     restart: unless-stopped
     ports:
       - "3000:80"
